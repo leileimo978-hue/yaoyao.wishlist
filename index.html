@@ -1,122 +1,274 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>瑶瑶的愿望清单</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>瑶瑶的愿望清单</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #fafafa;
-      color: #222;
-    }
+<style>
+/* ------------------ 页面整体 ------------------ */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #fafafa;
+  color: #222;
+}
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 24px 16px 48px;
+}
+h1 {
+  font-size: 26px;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+.subtitle {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
 
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 24px 16px 48px;
-    }
+/* ------------------ 图片墙 ------------------ */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+.gallery img,
+.placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  object-fit: cover;
+  cursor: pointer;
+}
+.gallery img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.placeholder {
+  background: #eaeaea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
 
-    h1 {
-      font-size: 26px;
-      margin-bottom: 8px;
-      letter-spacing: 1px;
-    }
+/* ------------------ 右上角新增愿望按钮 ------------------ */
+#addWishBtn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  padding: 8px 12px;
+  background-color: #ff4081;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 1000;
+}
 
-    .subtitle {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 24px;
-    }
+/* ------------------ 模态弹窗 ------------------ */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1001;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+}
+.modal-content {
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 10px;
+  text-align: center;
+}
+.close {
+  float: right;
+  font-size: 22px;
+  cursor: pointer;
+}
+#wishInput {
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px;
+}
+#wishList {
+  margin: 24px 0;
+  font-size: 16px;
+  color: #333;
+}
+.wish-list-item {
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  background: #ffebf0;
+  border-radius: 6px;
+}
 
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 12px;
-    }
+/* ------------------ Lightbox 图片放大 ------------------ */
+#lightbox {
+  display: none;
+  position: fixed;
+  z-index: 1002;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,0.8);
+  justify-content:center;
+  align-items:center;
+}
+#lightbox img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius:10px;
+}
+#lightbox span {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 30px;
+  color: white;
+  cursor: pointer;
+}
 
-    /* 图片和占位共用尺寸 */
-    .gallery img,
-    .placeholder {
-      width: 100%;
-      aspect-ratio: 4 / 3;
-      border-radius: 10px;
-    }
-
-    .gallery img {
-      object-fit: cover;
-    }
-
-    .placeholder {
-      background: #eaeaea;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #999;
-      font-size: 14px;
-      letter-spacing: 1px;
-    }
-
-    footer {
-      text-align: center;
-      color: #aaa;
-      font-size: 12px;
-      margin-top: 40px;
-    }
-
-    /* 手机适配 */
-    @media (max-width: 768px) {
-      .gallery {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-  </style>
+/* ------------------ 手机自适应 ------------------ */
+@media (max-width: 768px) {
+  .gallery {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+</style>
 </head>
-
 <body>
-  <div class="container">
-    <h1>瑶瑶的愿望清单</h1>
-    <div class="subtitle">有些事情，不急着实现，但想认真留住。</div>
+<div class="container">
+  <h1>瑶瑶的愿望清单</h1>
+  <div class="subtitle">有些事情，不急着实现，但想认真留住。</div>
 
-    <div class="gallery">
-      <!-- 第一行 -->
-      <img src="images/1.jpg">
-      <img src="images/2.jpg">
-      <img src="images/3.jpg">
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
+  <!-- 新增小愿望按钮 -->
+  <button id="addWishBtn">新增小愿望</button>
 
-      <!-- 第二行 -->
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-
-      <!-- 第三行 -->
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-
-      <!-- 第四行 -->
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
-      <div class="placeholder">暂未上传</div>
+  <!-- 小愿望弹窗 -->
+  <div id="wishModal" class="modal">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <h2>请输入你的愿望</h2>
+      <textarea id="wishInput" rows="3" placeholder="写下你的愿望..."></textarea>
+      <button id="submitWish">提交</button>
     </div>
-
-    <footer>
-      Made quietly · For Yaoyao
-    </footer>
   </div>
+
+  <!-- 显示愿望列表 -->
+  <div id="wishList" class="wish-list"></div>
+
+  <!-- 图片墙 -->
+  <div class="gallery">
+    <!-- 占位示例（如果以后有图片，替换占位即可） -->
+    <img src="images/1.jpg">
+    <img src="images/2.jpg">
+    <img src="images/3.jpg">
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+    <div class="placeholder">暂未上传</div>
+  </div>
+
+  <!-- 图片放大 Lightbox -->
+  <div id="lightbox">
+    <span id="closeLightbox">&times;</span>
+    <img src="" alt="放大图片">
+  </div>
+
+  <footer>
+    Made quietly · For Yaoyao
+  </footer>
+</div>
+
+<script>
+// ------------------ 新增小愿望功能 ------------------
+const addBtn = document.getElementById('addWishBtn');
+const modal = document.getElementById('wishModal');
+const closeModal = document.getElementById('closeModal');
+const submitBtn = document.getElementById('submitWish');
+const wishInput = document.getElementById('wishInput');
+const wishList = document.getElementById('wishList');
+
+addBtn.onclick = () => modal.style.display = 'block';
+closeModal.onclick = () => modal.style.display = 'none';
+window.onclick = e => { if(e.target==modal) modal.style.display='none'; }
+
+submitBtn.onclick = () => {
+  const text = wishInput.value.trim();
+  if(text){
+    const div = document.createElement('div');
+    div.className = 'wish-list-item';
+    div.textContent = text;
+    wishList.appendChild(div);
+
+    // 保存到 localStorage
+    let wishes = JSON.parse(localStorage.getItem('wishes') || '[]');
+    wishes.push(text);
+    localStorage.setItem('wishes', JSON.stringify(wishes));
+
+    wishInput.value = '';
+    modal.style.display = 'none';
+  }
+}
+
+// 页面加载时读取 localStorage
+window.onload = () => {
+  let wishes = JSON.parse(localStorage.getItem('wishes') || '[]');
+  wishes.forEach(text => {
+    const div = document.createElement('div');
+    div.className = 'wish-list-item';
+    div.textContent = text;
+    wishList.appendChild(div);
+  });
+}
+
+// ------------------ 图片放大功能 ------------------
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = lightbox.querySelector('img');
+const closeLightbox = document.getElementById('closeLightbox');
+
+document.querySelectorAll('.gallery img').forEach(img => {
+  img.onclick = () => {
+    lightboxImg.src = img.src;
+    lightbox.style.display = 'flex';
+  }
+});
+
+closeLightbox.onclick = () => lightbox.style.display = 'none';
+lightbox.onclick = e => { if(e.target==lightbox) lightbox.style.display='none'; }
+</script>
 </body>
 </html>
