@@ -14,7 +14,7 @@ body {
   color: #222;
 }
 .container {
-  max-width: 900px;
+  max-width: 1200px;
   margin: auto;
   padding: 24px 16px 48px;
 }
@@ -29,48 +29,41 @@ h1 {
   margin-bottom: 24px;
 }
 
-/* ------------------ 单条愿望分栏 ------------------ */
-.wish-item {
-  background: #fff;
-  border-radius: 10px;
-  padding: 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-}
-
-.wish-text {
-  font-size: 18px;
-  font-weight: 500;
-  margin-bottom: 12px;
-}
-
-/* 图片区域 */
-.wish-images {
-  display: flex;
+/* ------------------ 图片墙 ------------------ */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
   gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 8px;
 }
-.wish-images img,
-.wish-images .placeholder {
-  width: 120px;
-  height: 120px;
-  border-radius: 8px;
+.gallery-item {
+  position: relative;
+}
+.gallery img,
+.placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
   object-fit: cover;
   cursor: pointer;
 }
-.wish-images .placeholder {
+.gallery img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.placeholder {
+  background: #eaeaea;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eaeaea;
   color: #999;
   font-size: 14px;
+  letter-spacing: 1px;
 }
 
 /* ------------------ 星级评分 ------------------ */
 .stars {
+  margin-top: 6px;
   text-align: center;
 }
 .star {
@@ -128,7 +121,15 @@ h1 {
   padding: 8px;
 }
 #wishList {
-  margin-top: 24px;
+  margin: 24px 0;
+  font-size: 16px;
+  color: #333;
+}
+.wish-list-item {
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  background: #ffebf0;
+  border-radius: 6px;
 }
 
 /* ------------------ Lightbox 图片放大 ------------------ */
@@ -174,10 +175,8 @@ h1 {
 
 /* ------------------ 手机自适应 ------------------ */
 @media (max-width: 768px) {
-  .wish-images img,
-  .wish-images .placeholder {
-    width: 90px;
-    height: 90px;
+  .gallery {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 </style>
@@ -200,19 +199,14 @@ h1 {
     </div>
   </div>
 
-  <!-- 願望列表 -->
-  <div id="wishList">
+  <!-- 显示愿望列表 -->
+  <div id="wishList" class="wish-list"></div>
 
-    <!-- ---------- 愿望1 ---------- -->
-    <div class="wish-item">
-      <div class="wish-text">愿望1：内搭衣物</div>
-      
-      <div class="wish-images">
-        <img src="images/1.jpg" alt="愿望图片1" data-index="0">
-        <img src="images/2.jpg" alt="愿望图片2" data-index="1">
-        <img src="images/3.jpg" alt="愿望图片3" data-index="2">
-      </div>
-
+  <!-- 图片墙 -->
+  <div class="gallery">
+    <!-- 示例占位图片 -->
+    <div class="gallery-item">
+      <img src="images/1.jpg" alt="愿望图片1">
       <div class="stars" data-index="0">
         <span class="star" data-value="1">&#9733;</span>
         <span class="star" data-value="2">&#9733;</span>
@@ -221,17 +215,8 @@ h1 {
         <span class="star" data-value="5">&#9733;</span>
       </div>
     </div>
-
-    <!-- ---------- 愿望2 ---------- -->
-    <div class="wish-item">
-      <div class="wish-text">愿望2：电子手表</div>
-      
-      <div class="wish-images">
-        <div class="placeholder" data-index="3">暂未上传</div>
-        <div class="placeholder" data-index="4">暂未上传</div>
-        <div class="placeholder" data-index="5">暂未上传</div>
-      </div>
-
+    <div class="gallery-item">
+      <img src="images/2.jpg" alt="愿望图片2">
       <div class="stars" data-index="1">
         <span class="star" data-value="1">&#9733;</span>
         <span class="star" data-value="2">&#9733;</span>
@@ -240,8 +225,18 @@ h1 {
         <span class="star" data-value="5">&#9733;</span>
       </div>
     </div>
-
-  </div> <!-- #wishList end -->
+    <div class="gallery-item">
+      <img src="images/3.jpg" alt="愿望图片3">
+      <div class="stars" data-index="2">
+        <span class="star" data-value="1">&#9733;</span>
+        <span class="star" data-value="2">&#9733;</span>
+        <span class="star" data-value="3">&#9733;</span>
+        <span class="star" data-value="4">&#9733;</span>
+        <span class="star" data-value="5">&#9733;</span>
+      </div>
+    </div>
+    <!-- 可以继续复制 gallery-item 到 24 个 -->
+  </div>
 
   <!-- 图片放大 Lightbox -->
   <div id="lightbox">
@@ -250,6 +245,9 @@ h1 {
     <div id="lightboxRating"></div>
   </div>
 
+  <footer>
+    Made quietly · For Yaoyao
+  </footer>
 </div>
 
 <script>
@@ -269,23 +267,9 @@ submitBtn.onclick = () => {
   const text = wishInput.value.trim();
   if(text){
     const div = document.createElement('div');
-    div.className = 'wish-item';
-    div.innerHTML = `
-      <div class="wish-text">${text}</div>
-      <div class="wish-images">
-        <div class="placeholder" data-index="${getNextIndex()}">暂未上传</div>
-      </div>
-      <div class="stars" data-index="${getNextStarsIndex()}">
-        <span class="star" data-value="1">&#9733;</span>
-        <span class="star" data-value="2">&#9733;</span>
-        <span class="star" data-value="3">&#9733;</span>
-        <span class="star" data-value="4">&#9733;</span>
-        <span class="star" data-value="5">&#9733;</span>
-      </div>
-    `;
+    div.className = 'wish-list-item';
+    div.textContent = text;
     wishList.appendChild(div);
-    attachStars(div);
-    attachLightbox(div);
 
     // 保存到 localStorage
     let wishes = JSON.parse(localStorage.getItem('wishes') || '[]');
@@ -297,101 +281,77 @@ submitBtn.onclick = () => {
   }
 }
 
-// 获取下一个 index
-function getNextIndex() {
-  let starsDivs = document.querySelectorAll('.stars');
-  return starsDivs.length * 3; // 假设每个愿望3张图片
-}
-function getNextStarsIndex() {
-  return document.querySelectorAll('.stars').length;
-}
-
 // 页面加载时读取 localStorage
 window.onload = () => {
   let wishes = JSON.parse(localStorage.getItem('wishes') || '[]');
   wishes.forEach(text => {
     const div = document.createElement('div');
-    div.className = 'wish-item';
-    div.innerHTML = `
-      <div class="wish-text">${text}</div>
-      <div class="wish-images">
-        <div class="placeholder" data-index="${getNextIndex()}">暂未上传</div>
-      </div>
-      <div class="stars" data-index="${getNextStarsIndex()}">
-        <span class="star" data-value="1">&#9733;</span>
-        <span class="star" data-value="2">&#9733;</span>
-        <span class="star" data-value="3">&#9733;</span>
-        <span class="star" data-value="4">&#9733;</span>
-        <span class="star" data-value="5">&#9733;</span>
-      </div>
-    `;
+    div.className = 'wish-list-item';
+    div.textContent = text;
     wishList.appendChild(div);
-    attachStars(div);
-    attachLightbox(div);
   });
 
-  // 初始化已有星级
-  document.querySelectorAll('.stars').forEach(starsDiv => attachStars(starsDiv.closest('.wish-item')));
+  // 初始化星级评分
+  document.querySelectorAll('.stars').forEach(starsDiv => {
+    const index = starsDiv.dataset.index;
+
+    // 读取本地存储
+    let ratings = JSON.parse(localStorage.getItem('ratings') || '{}');
+    if (ratings[index]) {
+      highlightStars(starsDiv, ratings[index]);
+    }
+
+    // 点击事件
+    starsDiv.querySelectorAll('.star').forEach(star => {
+      star.onclick = () => {
+        const rating = star.dataset.value;
+        highlightStars(starsDiv, rating);
+
+        // 保存到 localStorage
+        ratings[index] = rating;
+        localStorage.setItem('ratings', JSON.stringify(ratings));
+      }
+    });
+  });
 }
 
-// ------------------ 星级评分 ------------------
-function attachStars(wishDiv) {
-  const starsDiv = wishDiv.querySelector('.stars');
-  const index = starsDiv.dataset.index;
-  let ratings = JSON.parse(localStorage.getItem('ratings') || '{}');
-
-  if (ratings[index]) {
-    highlightStars(starsDiv, ratings[index]);
-  }
-
-  starsDiv.querySelectorAll('.star').forEach(star => {
-    star.onclick = () => {
-      const rating = star.dataset.value;
-      highlightStars(starsDiv, rating);
-
-      ratings[index] = rating;
-      localStorage.setItem('ratings', JSON.stringify(ratings));
+// 高亮函数
+function highlightStars(container, rating) {
+  container.querySelectorAll('.star').forEach(star => {
+    if (star.dataset.value <= rating) {
+      star.classList.add('selected');
+    } else {
+      star.classList.remove('selected');
     }
   });
 }
 
-function highlightStars(container, rating) {
-  container.querySelectorAll('.star').forEach(star => {
-    star.classList.toggle('selected', star.dataset.value <= rating);
-  });
-}
-
-// ------------------ Lightbox ------------------
+// ------------------ 图片放大 + 显示评分功能 ------------------
 const lightbox = document.getElementById('lightbox');
 const lightboxImg = lightbox.querySelector('img');
 const lightboxRating = document.getElementById('lightboxRating');
 const closeLightbox = document.getElementById('closeLightbox');
 
-function attachLightbox(wishDiv) {
-  wishDiv.querySelectorAll('.wish-images img, .wish-images .placeholder').forEach(img => {
-    img.onclick = () => {
-      if(img.tagName==='IMG') lightboxImg.src = img.src;
-      else lightboxImg.src = '';
+document.querySelectorAll('.gallery img').forEach(img => {
+  img.onclick = () => {
+    const index = img.parentElement.querySelector('.stars').dataset.index;
+    lightboxImg.src = img.src;
 
-      const starsDiv = wishDiv.querySelector('.stars');
-      const index = starsDiv.dataset.index;
-      let ratings = JSON.parse(localStorage.getItem('ratings') || '{}');
-      let rating = ratings[index] || 0;
-
-      let starsHtml = '';
-      for(let i=1;i<=5;i++){
-        starsHtml += (i<=rating) ? '★' : '☆';
-      }
-      lightboxRating.innerHTML = starsHtml;
-
-      lightbox.style.display = 'flex';
+    // 读取评分
+    let ratings = JSON.parse(localStorage.getItem('ratings') || '{}');
+    let rating = ratings[index] || 0;
+    let starsHtml = '';
+    for(let i=1;i<=5;i++){
+      starsHtml += (i<=rating) ? '★' : '☆';
     }
-  });
-}
+    lightboxRating.innerHTML = starsHtml;
+
+    lightbox.style.display = 'flex';
+  }
+});
 
 closeLightbox.onclick = () => lightbox.style.display = 'none';
 lightbox.onclick = e => { if(e.target==lightbox) lightbox.style.display='none'; }
-
 </script>
 </body>
 </html>
