@@ -35,6 +35,9 @@ h1 {
   grid-template-columns: repeat(6, 1fr);
   gap: 12px;
 }
+.gallery-item {
+  position: relative;
+}
 .gallery img,
 .placeholder {
   width: 100%;
@@ -56,6 +59,21 @@ h1 {
   color: #999;
   font-size: 14px;
   letter-spacing: 1px;
+}
+
+/* ------------------ 星级评分 ------------------ */
+.stars {
+  margin-top: 6px;
+  text-align: center;
+}
+.star {
+  font-size: 20px;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.star.selected {
+  color: #ffb400;
 }
 
 /* ------------------ 右上角新增愿望按钮 ------------------ */
@@ -132,7 +150,6 @@ h1 {
   max-height: 90%;
   border-radius:10px;
 }
-
 #lightbox span {
   position: absolute;
   top: 20px;
@@ -180,34 +197,38 @@ h1 {
 
   <!-- 图片墙 -->
   <div class="gallery">
-    <!-- 占位示例（如果以后有图片，替换占位即可） -->
-    <img src="images/1.jpg">
-    <img src="images/2.jpg">
-    <img src="images/3.jpg">
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
-    <div class="placeholder">暂未上传</div>
+    <!-- 示例占位图片 -->
+    <div class="gallery-item">
+      <img src="images/1.jpg" alt="愿望图片1">
+      <div class="stars" data-index="0">
+        <span class="star" data-value="1">&#9733;</span>
+        <span class="star" data-value="2">&#9733;</span>
+        <span class="star" data-value="3">&#9733;</span>
+        <span class="star" data-value="4">&#9733;</span>
+        <span class="star" data-value="5">&#9733;</span>
+      </div>
+    </div>
+    <div class="gallery-item">
+      <img src="images/2.jpg" alt="愿望图片2">
+      <div class="stars" data-index="1">
+        <span class="star" data-value="1">&#9733;</span>
+        <span class="star" data-value="2">&#9733;</span>
+        <span class="star" data-value="3">&#9733;</span>
+        <span class="star" data-value="4">&#9733;</span>
+        <span class="star" data-value="5">&#9733;</span>
+      </div>
+    </div>
+    <!-- 可以复制 gallery-item 直到 24 个 -->
+    <div class="gallery-item">
+      <img src="images/3.jpg" alt="愿望图片3">
+      <div class="stars" data-index="2">
+        <span class="star" data-value="1">&#9733;</span>
+        <span class="star" data-value="2">&#9733;</span>
+        <span class="star" data-value="3">&#9733;</span>
+        <span class="star" data-value="4">&#9733;</span>
+        <span class="star" data-value="5">&#9733;</span>
+      </div>
+    </div>
   </div>
 
   <!-- 图片放大 Lightbox -->
@@ -260,6 +281,40 @@ window.onload = () => {
     div.className = 'wish-list-item';
     div.textContent = text;
     wishList.appendChild(div);
+  });
+
+  // 初始化星级评分
+  document.querySelectorAll('.stars').forEach(starsDiv => {
+    const index = starsDiv.dataset.index;
+
+    // 读取本地存储
+    let ratings = JSON.parse(localStorage.getItem('ratings') || '{}');
+    if (ratings[index]) {
+      highlightStars(starsDiv, ratings[index]);
+    }
+
+    // 点击事件
+    starsDiv.querySelectorAll('.star').forEach(star => {
+      star.onclick = () => {
+        const rating = star.dataset.value;
+        highlightStars(starsDiv, rating);
+
+        // 保存到 localStorage
+        ratings[index] = rating;
+        localStorage.setItem('ratings', JSON.stringify(ratings));
+      }
+    });
+  });
+}
+
+// 高亮函数
+function highlightStars(container, rating) {
+  container.querySelectorAll('.star').forEach(star => {
+    if (star.dataset.value <= rating) {
+      star.classList.add('selected');
+    } else {
+      star.classList.remove('selected');
+    }
   });
 }
 
