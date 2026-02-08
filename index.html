@@ -144,10 +144,11 @@ h1 {
   background: rgba(0,0,0,0.8);
   justify-content:center;
   align-items:center;
+  flex-direction: column;
 }
 #lightbox img {
   max-width: 90%;
-  max-height: 90%;
+  max-height: 80%;
   border-radius:10px;
 }
 #lightbox span {
@@ -164,6 +165,12 @@ h1 {
   border-radius: 50%;
   cursor: pointer;
   z-index: 1003;
+}
+#lightboxRating {
+  font-size: 28px;
+  color: #ffb400;
+  margin-top: 10px;
+  text-align: center;
 }
 
 /* ------------------ 手机自适应 ------------------ */
@@ -218,7 +225,6 @@ h1 {
         <span class="star" data-value="5">&#9733;</span>
       </div>
     </div>
-    <!-- 可以复制 gallery-item 直到 24 个 -->
     <div class="gallery-item">
       <img src="images/3.jpg" alt="愿望图片3">
       <div class="stars" data-index="2">
@@ -229,12 +235,14 @@ h1 {
         <span class="star" data-value="5">&#9733;</span>
       </div>
     </div>
+    <!-- 可以继续复制 gallery-item 到 24 个 -->
   </div>
 
   <!-- 图片放大 Lightbox -->
   <div id="lightbox">
     <span id="closeLightbox">&times;</span>
     <img src="" alt="放大图片">
+    <div id="lightboxRating"></div>
   </div>
 
   <footer>
@@ -318,14 +326,26 @@ function highlightStars(container, rating) {
   });
 }
 
-// ------------------ 图片放大功能 ------------------
+// ------------------ 图片放大 + 显示评分功能 ------------------
 const lightbox = document.getElementById('lightbox');
 const lightboxImg = lightbox.querySelector('img');
+const lightboxRating = document.getElementById('lightboxRating');
 const closeLightbox = document.getElementById('closeLightbox');
 
 document.querySelectorAll('.gallery img').forEach(img => {
   img.onclick = () => {
+    const index = img.parentElement.querySelector('.stars').dataset.index;
     lightboxImg.src = img.src;
+
+    // 读取评分
+    let ratings = JSON.parse(localStorage.getItem('ratings') || '{}');
+    let rating = ratings[index] || 0;
+    let starsHtml = '';
+    for(let i=1;i<=5;i++){
+      starsHtml += (i<=rating) ? '★' : '☆';
+    }
+    lightboxRating.innerHTML = starsHtml;
+
     lightbox.style.display = 'flex';
   }
 });
